@@ -1,0 +1,6 @@
+Sprout components are written in Java, then compiled to WebAssembly by TeaVM.
+Reactivity works by tracking which State a component reads while it renders.
+The reconciler keeps one instance per component so local state survives re-renders.
+List items are matched by key, so reordering moves DOM nodes instead of rebuilding.
+Dependency injection is wired at build time by an annotation processor — no reflection.
+This very list was fetched over HTTP with sprout.Http and rendered on arrival.

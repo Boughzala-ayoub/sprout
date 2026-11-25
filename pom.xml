@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>dev.sprout</groupId>
+  <artifactId>sprout-parent</artifactId>
+  <version>0.1.0</version>
+  <packaging>pom</packaging>
+
+  <properties>
+    <java.version>17</java.version>
+    <teavm.version>0.15.0</teavm.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- -Dsprout.browserTests=false skips the tests that need headless Chrome -->
+    <sprout.browserTests>true</sprout.browserTests>
+    <!-- Where chrome lives, for the browser tests. Windows default; on Linux/macOS
+         chrome is already on PATH and this harmlessly points at nothing. -->
+    <chrome.dir>C:\Program Files\Google\Chrome\Application</chrome.dir>
+  </properties>
+
+  <modules>
+    <module>sprout-core</module>       <!-- the framework, published like the "react" package -->
+    <module>sprout-processor</module>  <!-- build-time DI codegen -->
+    <module>sprout-archetype</module>  <!-- `mvn archetype:generate` scaffolder (create-react-app) -->
+    <module>demo</module>              <!-- an app that DEPENDS ON sprout-core, like a user's project -->
+  </modules>
+</project>

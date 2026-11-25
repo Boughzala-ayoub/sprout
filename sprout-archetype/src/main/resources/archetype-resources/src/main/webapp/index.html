@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sprout app</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: system-ui, sans-serif; color: #1b2b1b; background: #f5faf3; }
+      main { max-width: 640px; margin: 0 auto; padding: 24px; }
+      h1 { font-size: 22px; }
+      button { font: inherit; padding: 6px 14px; border: 1px solid #6aa84f; border-radius: 6px;
+               background: #eaf5e4; color: #204010; cursor: pointer; }
+      button:hover { background: #dcefd2; }
+      .counter { display: flex; align-items: center; gap: 4px; margin-top: 12px; }
+      .counter .count { min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
+    </style>
+    <!-- Absolute paths: routes like /about must load the same assets. -->
+    <script type="text/javascript" charset="utf-8" src="/teavm/wasm-gc-runtime.js"></script>
+  </head>
+  <body onload="TeaVM.wasmGC.load('/teavm/classes.wasm').then(t => t.exports.main([]))">
+    <main>
+      <div id="app"></div>
+    </main>
+  </body>
+</html>

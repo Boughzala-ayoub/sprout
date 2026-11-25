@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>${groupId}</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>${version}</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- dev build: readable wasm, source maps, sources copied for the debugger -->
+    <sprout.minify>false</sprout.minify>
+    <sprout.debug>true</sprout.debug>
+    <sprout.optimization>SIMPLE</sprout.optimization>
+  </properties>
+
+  <profiles>
+    <!-- mvn -Pprod package  ->  optimized wasm, no debug info, no sources shipped -->
+    <profile>
+      <id>prod</id>
+      <properties>
+        <sprout.minify>true</sprout.minify>
+        <sprout.debug>false</sprout.debug>
+        <sprout.optimization>FULL</sprout.optimization>
+      </properties>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <!-- The Sprout framework -->
+    <dependency>
+      <groupId>dev.sprout</groupId>
+      <artifactId>sprout-core</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <!-- Build-time DI (@Service / @Autowired) -->
+    <dependency>
+      <groupId>dev.sprout</groupId>
+      <artifactId>sprout-processor</artifactId>
+      <version>0.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- TeaVM class-library emulator (needed by the TeaVM compiler) -->
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-classlib</artifactId>
+      <version>0.15.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+
+      <!-- Compile Java (+ Sprout) to WebAssembly (WasmGC) -->
+      <plugin>
+        <groupId>org.teavm</groupId>
+        <artifactId>teavm-maven-plugin</artifactId>
+        <version>0.15.0</version>
+        <executions>
+          <execution>
+            <id>web-client</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <phase>process-classes</phase>
+            <configuration>
+              <targetType>WEBASSEMBLY_GC</targetType>
+              <targetDirectory>${project.build.directory}/web/teavm</targetDirectory>
+              <mainClass>${package}.Main</mainClass>
+              <minifying>${sprout.minify}</minifying>
+              <debugInformationGenerated>${sprout.debug}</debugInformationGenerated>
+              <sourceMapsGenerated>${sprout.debug}</sourceMapsGenerated>
+              <sourceFilesCopied>${sprout.debug}</sourceFilesCopied>
+              <optimizationLevel>${sprout.optimization}</optimizationLevel>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- index.html + data/ alongside the wasm, so target/web is deployable as-is. -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>webapp</id>
+            <goals><goal>copy-resources</goal></goals>
+            <phase>process-classes</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/web</outputDirectory>
+              <resources><resource><directory>src/main/webapp</directory></resource></resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- The WasmGC loader (TeaVM.wasmGC.load) ships as a resource inside teavm-core;
+           the Maven plugin doesn't emit it, so unpack it next to classes.wasm. -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <id>wasm-gc-runtime</id>
+            <goals><goal>unpack</goal></goals>
+            <phase>process-classes</phase>
+            <configuration>
+              <!-- without this, unpack's marker file makes every later build skip it,
+                   and the loader silently goes missing whenever target/web is wiped -->
+              <overWriteReleases>true</overWriteReleases>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.teavm</groupId>
+                  <artifactId>teavm-core</artifactId>
+                  <version>0.15.0</version>
+                  <includes>org/teavm/backend/wasm/wasm-gc-runtime.js</includes>
+                  <outputDirectory>${project.build.directory}/web/teavm</outputDirectory>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                  </fileMappers>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

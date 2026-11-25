@@ -1,0 +1,6 @@
+target/
+*/target/
+*.class
+.claude/
+video/node_modules/
+video/out/

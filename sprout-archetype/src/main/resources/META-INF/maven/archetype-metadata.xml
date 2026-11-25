@@ -1,0 +1,29 @@
+<archetype-descriptor xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0 http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd"
+    name="sprout-app">
+  <fileSets>
+    <!-- Java sources: filtered (substitute ${package}) and moved under the package path -->
+    <fileSet filtered="true" packaged="true" encoding="UTF-8">
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*.java</include>
+      </includes>
+    </fileSet>
+    <!-- Static web page: copied verbatim -->
+    <fileSet filtered="false" packaged="false" encoding="UTF-8">
+      <directory>src/main/webapp</directory>
+      <includes>
+        <include>**/*.html</include>
+      </includes>
+    </fileSet>
+    <!-- The dev server (watch + rebuild): copied verbatim to the project root.
+         Not under src/main/java — it is a tool you run, not part of the app. -->
+    <fileSet filtered="false" packaged="false" encoding="UTF-8">
+      <directory></directory>
+      <includes>
+        <include>DevServer.java</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>
