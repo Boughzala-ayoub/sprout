@@ -1,5 +1,7 @@
 # 🌱 Sprout
 
+[![CI](https://github.com/Boughzala-ayoub/sprout/actions/workflows/ci.yml/badge.svg)](https://github.com/Boughzala-ayoub/sprout/actions/workflows/ci.yml)
+
 A **React-style, Spring-flavored frontend framework** — you write components in
 **Java**, [TeaVM](https://teavm.org) compiles them to **WebAssembly**, and they run
 in the browser. Built to learn how these frameworks actually work inside.
@@ -228,8 +230,8 @@ static directory — upload it anywhere:
 | whole directory        | 1.6 MB | 342 KB | — |
 
 Your host must serve `.wasm` as `application/wasm` (`WebAssembly.compileStreaming`
-rejects anything else) and should have gzip or brotli on — that is 95 KB over the
-wire for the framework, app, and Java class library together.
+rejects anything else) and should have gzip or brotli on — that is ~86–95 KB over the
+wire (depending on demo features enabled) for the framework, app, and Java class library together.
 
 ### The one line of JavaScript
 `wasm-gc-runtime.js` is not optional and not removable: WebAssembly has no direct
